@@ -1,0 +1,50 @@
+version: '3.9'
+
+
+services:
+  database:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: ${POSTGRES__USER}
+      POSTGRES_DB: ${POSTGRES__DB}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+    restart: always
+    volumes:
+        - ${DATABASE_PATH:-stub_reports_database}:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${DB_PORT:-12344}:5432"
+    networks:
+      backend_net:
+    
+
+  api:
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
+    build:
+      context: ../
+    environment:
+      APP__PORT: ${APP__PORT}
+      APP__HOST: ${APP__HOST}
+      #
+      POSTGRES__USER: ${POSTGRES__USER}
+      POSTGRES__PASSWORD: ${POSTGRES__PASSWORD}
+      POSTGRES__DB: ${POSTGRES__DB}
+      POSTGRES__PORT: ${POSTGRES__PORT}
+      #
+      TOKEN__JWT_ALGO: ${TOKEN__JWT_ALGO}
+      TOKEN__SECRET: ${TOKEN__SECRET}
+      #
+    restart: always
+    volumes:
+      - "../app:/reports/app"
+      - "../migrations:/reports/migrations"
+    networks:
+      backend_net:
+    ports:
+      - "127.0.0.1:${API_PORT:-12345}:8080"
+
+networks:
+  backend_net:
+    driver: bridge
+
+volumes:
+  stub_reports_database:

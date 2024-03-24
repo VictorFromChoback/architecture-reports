@@ -1,0 +1,2 @@
+class DBObjectNotFoundError(Exception):
+    pass
