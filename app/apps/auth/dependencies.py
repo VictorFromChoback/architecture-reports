@@ -25,7 +25,7 @@ async def get_current_user(users_repo: EmployeeRepository = Depends(get_employee
     user = await users_repo.get_by_username(payload["username"])
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-    return user
+    return EmployeeData(id=user.id, username=user.username, role=user.role)
 
 
 async def get_current_admin(current_user: EmployeeData = Depends(get_current_user)):

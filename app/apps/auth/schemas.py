@@ -12,7 +12,6 @@ class ResponseAuth(BaseModel):
 class EmployeeData(BaseModel):
     id: int
     username: str
-    hashed_password: str
     role: str
 
 

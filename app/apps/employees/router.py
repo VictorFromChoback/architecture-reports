@@ -28,3 +28,12 @@ async def add_subordinate(lead_subordinate: LeadSubordinate,
     except DBObjectNotFoundError as err:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
     return MESSAGE_OK
+
+
+@router.post("/team")
+async def create_team(name: str,
+                      lead: int,
+                      organization_repo: EmployeesOrganizationRepo,
+                      _: CurrentAdmin):
+    await organization_repo.create_team(lead, name)
+    return MESSAGE_OK
