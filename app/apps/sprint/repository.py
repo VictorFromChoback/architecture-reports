@@ -14,3 +14,11 @@ class SprintRepository(BaseRepository):
 
     async def get_sprints(self) -> list[SprintModel]:
         await self.fetch_objects(select(Sprints))
+
+    async def get_active_sprint(self, team: int) -> int | None:
+        sprint: Sprints | None = (await self.execute(select(Sprints).where(Sprints.team == team,
+                                                                           Sprints.begin <= date.today(),
+                                                                           Sprints.end >= date.today()))).scalar()
+        if sprint is None:
+            return None
+        return sprint.id
