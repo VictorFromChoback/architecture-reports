@@ -1,9 +1,9 @@
 from fastapi import APIRouter, status, HTTPException
 
-from ..auth.dependencies import CurrentAdmin, EmployeeRepo
+from ..auth.dependencies import CurrentAdmin, EmployeeRepo, CurrentUser
 from ..auth.schemas import NewEmployee
 from .dependencies import EmployeesOrganizationRepo
-from .schemas import LeadSubordinate
+from .schemas import LeadSubordinate, Employee
 from ...core import MESSAGE_OK
 from ...exceptions import DBObjectNotFoundError
 
@@ -17,6 +17,11 @@ async def new_employee(new_employee: NewEmployee,
                        _: CurrentAdmin):
     await employee_repo.add_employee(new_employee)
     return MESSAGE_OK
+
+
+@router.get("", response_model=list[Employee])
+async def get_employees(employee_repo: EmployeeRepo, _: CurrentUser):
+    return await employee_repo.get_all_employees()
 
 
 @router.post("/subordinate")

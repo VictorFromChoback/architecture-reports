@@ -8,6 +8,9 @@ from .jwt import get_hashed_password
 
 class EmployeeRepository(BaseRepository):
 
+    async def get_all_employees(self):
+        return await self.fetch_objects(select(Employees))
+
     async def get_by_username(self, username: str) -> Employees | None:
         return (await self.execute(select(Employees).where(Employees.username == username))).scalar()
 

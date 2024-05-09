@@ -6,6 +6,7 @@ from ..employees.schemas import TeamLeadData
 
 
 class SprintModel(BaseModel):
+    id: str
     name: str
     begin: date
     end: date

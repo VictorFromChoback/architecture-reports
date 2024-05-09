@@ -18,3 +18,6 @@ class BaseRepository:
         result = await self.execute(query)
         result = result.fetchall()
         return [row._asdict() for row in result]
+
+    async def fetch_scalar(self, query: Select) -> DeclarativeMeta | None:
+        return (await self.execute(query)).scalar()

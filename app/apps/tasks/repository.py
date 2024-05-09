@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 
 from ...core import BaseRepository
 from .orm import Tasks, TaskComments, task_comments
 from ..auth.orm import employees
-from .schemas import NewTaskModel, TaskStatus, TaskComment, Comment
+from .schemas import NewTaskModel, TaskStatus, TaskComment, Comment, TasksFilterRequest
 
 
 class TaskRepository(BaseRepository):
@@ -33,3 +33,33 @@ class TaskRepository(BaseRepository):
         return [Comment(author=value["username"],
                         text=value["text"],
                         creation_date=value["creation_date"]) for value in data]
+
+    async def update_task_status(self, task_id: int, status: TaskStatus) -> None:
+        await self.execute(update(Tasks).where(Tasks.id == task_id).values(status=status))
+
+    def _make_conds(self,
+                    employee: int | None,
+                    name_substr: str | None,
+                    descr_substr: str | None,
+                    status: TaskStatus | None,
+                    sprint: int | None):
+        conds = []
+        if employee:
+            conds.append(Tasks.employee == employee)
+        if name_substr:
+            conds.append(Tasks.name.like(f"%{name_substr}%"))
+        if descr_substr:
+            conds.append(Tasks.description.like(f"%{descr_substr}%"))
+        if status:
+            conds.append(Tasks.status == status)
+        if sprint:
+            conds.append(Tasks.sprint == sprint)
+        return conds
+
+    async def filter_tasks(self, request: TasksFilterRequest):
+        return await self.fetch_objects(select(Tasks)
+                                        .where(*self._make_conds(employee=request.employee,
+                                                                 name_substr=request.name_substr,
+                                                                 descr_substr=request.descr_substr,
+                                                                 status=request.status,
+                                                                 sprint=request.sprint)))

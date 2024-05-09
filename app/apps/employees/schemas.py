@@ -11,3 +11,9 @@ class LeadSubordinate(BaseModel):
 class TeamLeadData(EmployeeData):
     team_id: int
     team_name: str
+
+
+class Employee(BaseModel):
+    id: int
+    username: str
+    role: str
