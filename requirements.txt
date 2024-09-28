@@ -1,0 +1,10 @@
+alembic
+fastapi
+sqlalchemy
+asyncpg
+uvicorn
+passlib
+python-jose
+pydantic-settings
+python-multipart
+psycopg2
